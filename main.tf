@@ -4,38 +4,40 @@ module "frontend" {
   name        = "frontend"
   label_order = var.label_order
   # region = var.region
-#   domain_name = local.domain_name
-#   zone_id     = aws_route53_zone.this.zone_id
-#   marketplace_cloudfront_min_ttl = var.marketplace_cloudfront_min_ttl
-#   marketplace_cloudfront_default_ttl = var.marketplace_cloudfront_default_ttl
-#   marketplace_cloudfront_max_ttl = var.marketplace_cloudfront_max_ttl
+  #   domain_name = local.domain_name
+  #   zone_id     = aws_route53_zone.this.zone_id
+  #   marketplace_cloudfront_min_ttl = var.marketplace_cloudfront_min_ttl
+  #   marketplace_cloudfront_default_ttl = var.marketplace_cloudfront_default_ttl
+  #   marketplace_cloudfront_max_ttl = var.marketplace_cloudfront_max_ttl
 }
 
 module "dynamo_db_courses" {
-  source      = "./modules/dynamodb/eu-central-1"
-  context     = module.base_labels.context
-  name        = "courses"
+  source  = "./modules/dynamodb/eu-central-1"
+  context = module.base_labels.context
+  name    = "courses"
 }
 
 module "dynamo_db_authors" {
-  source      = "./modules/dynamodb/eu-central-1"
-  context     = module.base_labels.context
-  name        = "authors"
+  source  = "./modules/dynamodb/eu-central-1"
+  context = module.base_labels.context
+  name    = "authors"
 }
 
 module "lambda" {
-  source      = "./modules/lambda/eu-central-1"
-  context     = module.base_labels.context
-  name        = "lambda"
-  
+  source  = "./modules/lambda/eu-central-1"
+  context = module.base_labels.context
+  name    = "lambda"
+
   role_get_all_authors_arn    = module.iam.role_get_all_authors_arn
   role_get_all_courses_arn    = module.iam.role_get_all_courses_arn
   role_get_course_arn         = module.iam.role_get_course_arn
   role_save_update_course_arn = module.iam.role_save_update_course_arn
   role_delete_course_arn      = module.iam.role_delete_course_arn
 
-  dynamo_db_authors_name       = module.dynamo_db_authors.role_dynamodb_name
-  dynamo_db_courses_name       = module.dynamo_db_courses.role_dynamodb_name
+  dynamo_db_authors_name = module.dynamo_db_authors.role_dynamodb_name
+  dynamo_db_courses_name = module.dynamo_db_courses.role_dynamodb_name
+
+  api_geteway_execution_arn = aws_api_gateway_rest_api.this.execution_arn
 }
 
 module "iam" {
@@ -47,10 +49,10 @@ module "iam" {
 }
 
 resource "aws_dynamodb_table" "example" {
-  name            = module.base_labels.id
-  hash_key        = "id"
+  name     = module.base_labels.id
+  hash_key = "id"
 
-  billing_mode    = "PAY_PER_REQUEST"
+  billing_mode = "PAY_PER_REQUEST"
 
   attribute {
     name = "id"
@@ -76,49 +78,31 @@ module "budget" {
   author_name                = var.author_name
 }
 
+resource "aws_dynamodb_table_item" "author" {
+  table_name = module.dynamo_db_authors.role_dynamodb_name
+  hash_key   = module.dynamo_db_authors.role_dynamodb_hash_key
 
-
-############################################################################ Pererobyty
-
-
-
-##############################################################################
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-data "aws_caller_identity" "current" {}
-
-
-module "cost_mgmt_notif" {
-  source                =  "git::https://github.com/binbashar/terraform-aws-cost-budget.git?ref=v1.0.10"
-
-  aws_env               = var.stage
-  currency              = "USD"
-  limit_amount          = "1.0"
-  time_unit             = "MONTHLY"
-  time_period_start     = "2019-01-01_00:00"
-  aws_sns_account_id    = data.aws_caller_identity.current.account_id
-  
-  for_each = ["yurii.zhuravchak.itis.2019@lpnu.ua", "yurii.zhuravchak.itis.2019@lpnu.ua", "yurii.zhuravchak.itis.2019@lpnu.ua"]
-  aws_sns_account_id    = cost_mgmt_notif.value
-  
+  item = <<ITEM
+  {
+    "id": {"S": "cory-house"},
+    "firstName": {"S": "Cory"},
+    "lastName": {"S": "House"}
+  }
+ITEM
 }
-*/
+
+resource "aws_dynamodb_table_item" "example" {
+  table_name = module.dynamo_db_courses.role_dynamodb_name
+  hash_key   = module.dynamo_db_courses.role_dynamodb_hash_key
+
+  item = <<ITEM
+{
+  "id": {"S": "web-components-shadow-dom"},
+  "title": {"S": "Web Component Fundamentals"},
+  "watchHref": {"S": "http://www.pluralsight.com/courses/web-components-shadow-dom"},
+  "authorId": {"S": "cory-house"},
+  "length": {"S": "5:10"},
+  "category": {"S": "HTML5"}
+}
+ITEM
+}

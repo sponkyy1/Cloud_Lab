@@ -2,6 +2,7 @@ module "labels" {
   source  = "git::https://github.com/cloudposse/terraform-null-label.git?ref=0.24.1"
   context = var.context
   name    = var.name
+  label_order = var.label_order
 }
 
 data "archive_file" "get_all_authors" {
@@ -16,18 +17,20 @@ resource "aws_lambda_function" "get_all_authors" {
   role          = var.role_get_all_authors_arn
   handler       = "get-all-authors.handler"
 
-#   # The filebase64sha256() function is available in Terraform 0.11.12 and later
-#   # For Terraform 0.11.11 and earlier, use the base64sha256() function and the file() function:
-#   # source_code_hash = "${base64sha256(file("lambda_function_payload.zip"))}"
+  #   # The filebase64sha256() function is available in Terraform 0.11.12 and later
+  #   # For Terraform 0.11.11 and earlier, use the base64sha256() function and the file() function:
+  #   # source_code_hash = "${base64sha256(file("lambda_function_payload.zip"))}"
   source_code_hash = data.archive_file.get_all_authors.output_base64sha256
 
-   runtime = "nodejs14.x"
-   environment {
-     variables = {
-       "TABLE_NAME" = var.dynamo_db_authors_name
-     }
-   }
+  runtime = "nodejs14.x"
+  environment {
+    variables = {
+      "TABLE_NAME" = var.dynamo_db_authors_name
+    }
+  }
 }
+
+
 
 data "archive_file" "get_all_courses" {
   type        = "zip"
@@ -41,17 +44,17 @@ resource "aws_lambda_function" "get_all_courses" {
   role          = var.role_get_all_courses_arn
   handler       = "get-all-courses.handler"
 
-#   # The filebase64sha256() function is available in Terraform 0.11.12 and later
-#   # For Terraform 0.11.11 and earlier, use the base64sha256() function and the file() function:
-#   # source_code_hash = "${base64sha256(file("lambda_function_payload.zip"))}"
+  #   # The filebase64sha256() function is available in Terraform 0.11.12 and later
+  #   # For Terraform 0.11.11 and earlier, use the base64sha256() function and the file() function:
+  #   # source_code_hash = "${base64sha256(file("lambda_function_payload.zip"))}"
   source_code_hash = data.archive_file.get_all_courses.output_base64sha256
 
-   runtime = "nodejs14.x"
-   environment {
-     variables = {
-       "TABLE_NAME" = var.dynamo_db_courses_name
-     }
-   }
+  runtime = "nodejs14.x"
+  environment {
+    variables = {
+      "TABLE_NAME" = var.dynamo_db_courses_name
+    }
+  }
 }
 
 data "archive_file" "get_course" {
@@ -66,17 +69,17 @@ resource "aws_lambda_function" "get_course" {
   role          = var.role_get_course_arn
   handler       = "get-course.handler"
 
-#   # The filebase64sha256() function is available in Terraform 0.11.12 and later
-#   # For Terraform 0.11.11 and earlier, use the base64sha256() function and the file() function:
-#   # source_code_hash = "${base64sha256(file("lambda_function_payload.zip"))}"
+  #   # The filebase64sha256() function is available in Terraform 0.11.12 and later
+  #   # For Terraform 0.11.11 and earlier, use the base64sha256() function and the file() function:
+  #   # source_code_hash = "${base64sha256(file("lambda_function_payload.zip"))}"
   source_code_hash = data.archive_file.get_course.output_base64sha256
 
-   runtime = "nodejs14.x"
-   environment {
-     variables = {
-       "TABLE_NAME" = var.dynamo_db_courses_name
-     }
-   }
+  runtime = "nodejs14.x"
+  environment {
+    variables = {
+      "TABLE_NAME" = var.dynamo_db_courses_name
+    }
+  }
 }
 
 data "archive_file" "save_course" {
@@ -91,17 +94,17 @@ resource "aws_lambda_function" "save_course" {
   role          = var.role_save_update_course_arn
   handler       = "save-course.handler"
 
-#   # The filebase64sha256() function is available in Terraform 0.11.12 and later
-#   # For Terraform 0.11.11 and earlier, use the base64sha256() function and the file() function:
-#   # source_code_hash = "${base64sha256(file("lambda_function_payload.zip"))}"
+  #   # The filebase64sha256() function is available in Terraform 0.11.12 and later
+  #   # For Terraform 0.11.11 and earlier, use the base64sha256() function and the file() function:
+  #   # source_code_hash = "${base64sha256(file("lambda_function_payload.zip"))}"
   source_code_hash = data.archive_file.save_course.output_base64sha256
 
-   runtime = "nodejs14.x"
-   environment {
-     variables = {
-       "TABLE_NAME" = var.dynamo_db_courses_name
-     }
-   }
+  runtime = "nodejs14.x"
+  environment {
+    variables = {
+      "TABLE_NAME" = var.dynamo_db_courses_name
+    }
+  }
 }
 
 data "archive_file" "update_course" {
@@ -116,17 +119,17 @@ resource "aws_lambda_function" "update_course" {
   role          = var.role_save_update_course_arn
   handler       = "update-course.handler"
 
-#   # The filebase64sha256() function is available in Terraform 0.11.12 and later
-#   # For Terraform 0.11.11 and earlier, use the base64sha256() function and the file() function:
-#   # source_code_hash = "${base64sha256(file("lambda_function_payload.zip"))}"
+  #   # The filebase64sha256() function is available in Terraform 0.11.12 and later
+  #   # For Terraform 0.11.11 and earlier, use the base64sha256() function and the file() function:
+  #   # source_code_hash = "${base64sha256(file("lambda_function_payload.zip"))}"
   source_code_hash = data.archive_file.update_course.output_base64sha256
 
-   runtime = "nodejs14.x"
-   environment {
-     variables = {
-       "TABLE_NAME" = var.dynamo_db_courses_name
-     }
-   }
+  runtime = "nodejs14.x"
+  environment {
+    variables = {
+      "TABLE_NAME" = var.dynamo_db_courses_name
+    }
+  }
 }
 
 data "archive_file" "delete_course" {
@@ -141,15 +144,63 @@ resource "aws_lambda_function" "delete_course" {
   role          = var.role_delete_course_arn
   handler       = "delete-course.handler"
 
-#   # The filebase64sha256() function is available in Terraform 0.11.12 and later
-#   # For Terraform 0.11.11 and earlier, use the base64sha256() function and the file() function:
-#   # source_code_hash = "${base64sha256(file("lambda_function_payload.zip"))}"
+  #   # The filebase64sha256() function is available in Terraform 0.11.12 and later
+  #   # For Terraform 0.11.11 and earlier, use the base64sha256() function and the file() function:
+  #   # source_code_hash = "${base64sha256(file("lambda_function_payload.zip"))}"
   source_code_hash = data.archive_file.delete_course.output_base64sha256
 
-   runtime = "nodejs14.x"
-   environment {
-     variables = {
-       "TABLE_NAME" = var.dynamo_db_courses_name
-     }
-   }
+  runtime = "nodejs14.x"
+  environment {
+    variables = {
+      "TABLE_NAME" = var.dynamo_db_courses_name
+    }
+  }
+}
+
+resource "aws_lambda_permission" "get_all_authors_permission" {
+  function_name = "${module.labels.id}-get-all-authors"
+  statement_id  = module.labels.id
+  action        = "lambda:InvokeFunction"
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${var.api_geteway_execution_arn}/*/*/*"
+}
+
+resource "aws_lambda_permission" "get_all_courses_permission" {
+  function_name = "${module.labels.id}-get-all-courses"
+  statement_id  = module.labels.id
+  action        = "lambda:InvokeFunction"
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${var.api_geteway_execution_arn}/*/*/*"
+}
+
+resource "aws_lambda_permission" "get_course_permission" {
+  function_name = "${module.labels.id}-get-course"
+  statement_id  = module.labels.id
+  action        = "lambda:InvokeFunction"
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${var.api_geteway_execution_arn}/*/*/*"
+}
+
+resource "aws_lambda_permission" "save_course_permission" {
+  function_name = "${module.labels.id}-save-course"
+  statement_id  = module.labels.id
+  action        = "lambda:InvokeFunction"
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${var.api_geteway_execution_arn}/*/*/*"
+}
+
+resource "aws_lambda_permission" "update_course_permission" {
+  function_name = "${module.labels.id}-update-course"
+  statement_id  = module.labels.id
+  action        = "lambda:InvokeFunction"
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${var.api_geteway_execution_arn}/*/*/*"
+}
+
+resource "aws_lambda_permission" "delete_course_permission" {
+  function_name = "${module.labels.id}-delete-course"
+  statement_id  = module.labels.id
+  action        = "lambda:InvokeFunction"
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${var.api_geteway_execution_arn}/*/*/*"
 }
